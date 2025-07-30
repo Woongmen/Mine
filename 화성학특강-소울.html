@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>실용음악 화성학 특강 프레젠테이션</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Universal Box Sizing */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Ensure body takes full viewport height */
+            margin: 0;
+            overflow-x: hidden; /* Prevent horizontal scroll from slide transitions */
+        }
+        .presentation-container {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 95%; /* Slightly wider for mobile */
+            max-width: 1000px; /* Max width for larger screens */
+            height: calc(100vh - 2rem); /* Fixed height for desktop, with margin */
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Hide overflowing slides during transition */
+            position: relative;
+            touch-action: pan-y; /* Allow vertical scrolling, prevent default horizontal */
+        }
+        /* Mobile specific height adjustment for presentation container */
+        @media (max-width: 767px) { /* Apply for screens smaller than md breakpoint */
+            .presentation-container {
+                height: 95vh; /* Use 95% of viewport height for mobile */
+                min-height: 400px; /* Minimum height to ensure usability */
+            }
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%; /* Each slide takes full height of container */
+            flex-shrink: 0;
+            /* Responsive padding */
+            padding: 1.5rem; /* Default padding for small screens */
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            transform: translateX(100%); /* Default off-screen right */
+        }
+        /* Medium screens and up */
+        @media (min-width: 768px) {
+            .slide {
+                padding: 2.5rem 4rem; /* Larger padding for tablets/desktops */
+            }
+        }
+
+        .slide.active {
+            opacity: 1;
+            position: relative; /* Bring active slide to flow */
+            transform: translateX(0); /* Slide into view */
+        }
+        .slide-content {
+            height: 100%; /* Content area takes full height of slide */
+            overflow-y: auto; /* Enable manual scrolling for content overflow */
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+            padding-right: 0.5rem; /* Space for scrollbar on mobile */
+            width: 100%;
+        }
+        /* Adjust scrollbar padding for larger screens */
+        @media (min-width: 768px) {
+            .slide-content {
+                padding-right: 1rem;
+            }
+        }
+
+        .slide h1, .slide h2 {
+            color: #2c3e50; /* Dark blue for headings */
+            margin-bottom: 1.5rem;
+        }
+        .slide p, .slide ul {
+            color: #34495e; /* Slightly lighter dark blue for text */
+            font-size: 1rem; /* Default font size for mobile */
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+        /* Responsive font sizes */
+        @media (min-width: 640px) { /* sm breakpoint */
+            .slide p, .slide ul {
+                font-size: 1.05rem;
+            }
+        }
+        @media (min-width: 768px) { /* md breakpoint */
+            .slide p, .slide ul {
+                font-size: 1.1rem;
+            }
+        }
+
+        .slide ul {
+            list-style: disc;
+            padding-left: 1.5rem;
+        }
+        .slide li {
+            margin-bottom: 0.5rem;
+        }
+        /* Navigation buttons are removed, but keeping their styles just in case for future use or if user changes mind */
+        .navigation-buttons {
+            display: none; /* Hide navigation buttons */
+        }
+
+        .slide-number {
+            position: absolute;
+            bottom: 1rem; /* Adjusted for mobile */
+            right: 1.5rem; /* Adjusted for mobile */
+            color: #718096;
+            font-size: 0.8rem; /* Adjusted for mobile */
+        }
+        /* Adjust slide number for larger screens */
+        @media (min-width: 768px) {
+            .slide-number {
+                bottom: 1.5rem;
+                right: 2.5rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Specific styling for title slide */
+        #slide-0 {
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+        }
+        #slide-0 h1 {
+            font-size: 2.5rem; /* Adjusted for mobile */
+            margin-bottom: 0.8rem;
+            line-height: 1.2;
+        }
+        @media (min-width: 768px) {
+            #slide-0 h1 {
+                font-size: 3.5rem;
+            }
+        }
+        #slide-0 h2 {
+            font-size: 1.6rem; /* Adjusted for mobile */
+            color: #607d8b;
+            margin-bottom: 1.5rem;
+        }
+        @media (min-width: 768px) {
+            #slide-0 h2 {
+                font-size: 2.2rem;
+            }
+        }
+        #slide-0 p {
+            font-size: 1.2rem; /* Adjusted for mobile */
+            color: #78909c;
+        }
+        @media (min-width: 768px) {
+            #slide-0 p {
+                font-size: 1.4rem;
+            }
+        }
+
+        /* Styles for LLM generated content */
+        .llm-content-container {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: #e6f2ff; /* Light blue background */
+            border-left: 4px solid #4a90e2; /* Blue left border */
+            border-radius: 8px;
+            font-size: 0.9rem; /* Adjusted for mobile */
+            color: #2c3e50;
+        }
+        @media (min-width: 768px) {
+            .llm-content-container {
+                font-size: 0.95rem;
+            }
+        }
+
+        .llm-content-container p {
+            margin-bottom: 0.5rem;
+        }
+        .llm-content-container ul {
+            list-style: none; /* Remove default list style */
+            padding-left: 0;
+        }
+        .llm-content-container ul li {
+            margin-bottom: 0.3rem;
+        }
+        .llm-content-container .answer-reveal-button {
+            background-color: #28a745; /* Green button for answer */
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            border: none;
+            margin-top: 0.8rem;
+        }
+        .llm-content-container .answer-reveal-button:hover {
+            background-color: #218838;
+        }
+        .llm-content-container .loading-indicator {
+            font-style: italic;
+            color: #718096;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container" id="presentationContainer">
+        <!-- Slide 0: Title Slide -->
+        <div id="slide-0" class="slide active">
+            <h1>실용음악 화성학 특강 교과서</h1>
+            <h2>뮤지션이 알아야 할 화성학의 모든 것: 소리에서 음악으로</h2>
+            <p class="text-xl">강사: 강신웅</p>
+        </div>
+
+        <!-- Slide 1: 특강 목표 -->
+        <div id="slide-1" class="slide">
+            <div class="slide-content">
+                <h2 class="text-3xl font-bold">특강 목표</h2>
+                <p class="text-lg">이 특강은 화성학의 기초를 쉽고 재미있게 배우는 시간입니다. 복잡한 이론보다는 <b>'소리'를 직접 듣고 느끼는 경험</b>을 통해 음악적 감수성과 이해도를 높이는 데 초점을 맞춥니다.</p>
+                <ul class="list-disc ml-6 mt-4 text-lg">
+                    <li><b>음악과 소리의 본질적인 관계를 이해합니다.</b></li>
+                    <li><b>음정, 음계, 화음의 종류와 소리 특징을 파악합니다.</b></li>
+                    <li><b>다양한 코드 진행이 음악에 어떤 분위기와 흐름을 주는지 경험합니다.</b></li>
+                    <li><b>음악을 더 깊이 있게 감상하고, 자신의 연주/창작/노래에 화성학적 아이디어를 적용할 수 있는 기초를 마련합니다.</b></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 2: 1주차 학습 목표 -->
+        <div id="slide-2" class="slide">
+            <div class="slide-content">
+                <h2 class="text-3xl font-bold">1주차: 소리의 세계와 화음의 탄생</h2>
+                <h3 class="text-2xl font-semibold mt-4">학습 목표:</h3>
+                <ul class="list-disc ml-6 mt-2 text-lg">
+                    <li>소리와 음악의 물리적인 원리를 이해하고, 음정이 음악에서 중요한 이유를 인지한다.</li>
+                    <li>음정, 음계, 3화음 및 7화음의 소리를 구분하고 기본적인 특징을 파악한다.</li>
+                    <li>화음이 음악을 풍부하게 만드는 요소임을 경험한다.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 3: 1주차 1교시 - 음악이란 무엇일까? -->
+        <div id="slide-3" class="slide">
+            <div class="slide-content">
+                <h2 class="text-3xl font-bold">1주차 1교시: 음악의 뿌리, 소리의 기초</h2>
+                <h3 class="text-2xl font-semibold mt-4">1. 음악이란 무엇일까?</h3>
+                <ul class="list-disc ml-6 mt-2 text-lg">
+                    <li><b>우리를 둘러싼 소리들:</b> 세상의 소리와 음악은 어떻게 다를까요?</li>
+                    <li><b>음악의 구성 요소:</b> 음(Pitch), 리듬(Rhythm), 화성(Harmony), 멜로디(Melody)</li>
+                    <li><b>함께 이야기해봐요:</b> 여러분이 생각하는 '좋은 음악'은 어떤 음악인가요?</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 4: 1주차 1교시 - 소리의 비밀: 파동과 주파수 -->
+        <div id="slide-4" class="slide">
+            <div class="slide-content">
+                <h2 class="text-3xl font-bold">소리의 비밀: 파동과 주파수</h2>
+                <ul class="list-disc ml-6 mt-4 text-lg">
+                    <li><b>소리는 파동이다:</b> 공기 중의 진동. (물결처럼)</li>
+                    <li><b>주파수와 높낮이:</b> 주파수가 높으면 높은 소리, 낮으면 낮은 소리.</li>
+                    <li><b>가청 주파수:</b> 사람이 들을 수 있는 범위 (약 20Hz ~ 20kHz).</li>
+                    <li><b>소리의 DNA: 배음 (Harmonics / Overtone)</b>
+                        <ul class="list-circle ml-6 mt-2 text-base">
+                            <li>"하나의 소리 안에 여러 개의 다른 소리가 숨어있어요!"</li>
+                            <li>피아노 페달을 밟고 낮은 '도'를 치며 배음 소리 듣기.</li>
+                            <li>배음이 바로 화음의 기초가 됩니다.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 5: 1주차 1교시 - 음의 이름과 음정 -->
+        <div id="slide-5" class="slide">
+            <div class="slide-content">
+                <h2 class="text-3xl font-bold">음의 이름과 음정</h2>
+                <ul class="list-disc ml-6 mt-4 text-lg">
+                    <li><b>음의 이름:</b> C, D, E, F, G, A, B (다, 라, 마, 바, 사, 가, 나)</li>
+                    <li><b>옥타브:</b> 같은 음이름이지만 높낮이가 다른 음.</li>
+                    <li><b>음정(Interval):</b> 두 음 사이의 거리
+                        <ul class="list-circle ml-6 mt-2 text-base">
+                            <li><b>장2도 (Major 2nd):</b> '도'와 '레' (예: '나비야' 시작)</li>
+                            <li><b>장3도 (Major 3rd):</b> '도'와 '미' (밝고 안정적)</li>
+                            <li><b>완전5도 (Perfect 5th):</b> '도'와 '솔' (웅장하고 안정적)</li>
+                            <li>악보 없이 소리로만 느껴보기.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 6: 1주차 2교시 - 음계는 음악의 색깔 -->
+        <div id="slide-6" class="slide">
+            <div class="slide-content">
+                <h2 class="text-3xl font-bold">1주차 2교시: 음계와 화음의 기초</h2>
+                <h3 class="text-2xl font-semibold mt-4">1. 음계는 음악의 색깔</h3>
+                <ul class="list-disc ml-6 mt-4 text-lg">
+                    <li><b>음계(Scale):</b> 음들의 계단, 음악의 분위기를 결정.</li>
+                    <li><b>장음계(Major Scale):</b> 밝고 경쾌한 소리 ('도-레-미-파-솔-라-시-도')
+                        <ul class="list-circle ml-6 mt-2 text-base">
+                            <li>(C Major Scale 연주 예시: '작은별', '생일 축하 노래')</li>
+                            <li>'Happy Birthday' 멜로디 함께 불러보기/피아노로 자유롭게 멜로디 만들기.</li>
+                        </ul>
+                    </li>
+                    <li><b>단음계(Minor Scale):</b> 슬프고 어두운 소리.
+                        <ul class="list-circle ml-6 mt-2 text-base">
+                            <li>(A Minor Scale 연주 예시: '섬집 아기')</li>
+                            <li>간단한 멜로디를 장조/단조로 연주하며 분위기 비교.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 7: 1주차 2교시 - 음악의 벽돌: 3화음 & 7화음 -->
+        <div id="slide-7" class="slide">
+            <div class="slide-content">
+                <h2 class="text-3xl font-bold">음악의 벽돌: 3화음 & 7화음</h2>
+                <ul class="list-disc ml-6 mt-4 text-lg">
+                    <li><b>화음(Chord):</b> 두 개 이상의 음이 동시에 울리는 소리. 음악을 풍성하게 만듭니다.</li>
+                    <li><b>가장 기본 화음: 3화음 (Triad)</b>
+                        <ul class="list-circle ml-6 mt-2 text-base">
+                            <li><b>장3화음 (Major Triad):</b> 밝고 안정적 (예: C Major Chord)</li>
+                            <li><b>단3화음 (Minor Triad):</b> 슬프고 차분함 (예: C Minor Chord)</li>
+                            <li>피아노로 장/단3화음 연주하며 소리 차이 느껴보기.</li>
+                        </ul>
+                    </li>
+                    <li><b>음악을 더 부드럽게: 7화음 (Seventh Chord) (소리 집중!)</b>
+                        <ul class="list-circle ml-6 mt-2 text-base">
+                            <li>3화음에 7번째 음 추가. 더 풍부하고 세련된 느낌.</li>
+                            <li><b>메이저 세븐스 (Maj7):</b> 부드럽고 재즈적 (예: CMaj7)</li>
+                            <li><b>도미넌트 세븐스 (V7):</b> 강렬하고 다음으로 '진행하고 싶어 하는' 느낌 (예: G7)</li>
+                            <li><b>마이너 세븐스 (min7):):</b> 차분하고 부드러움 (예: Cmin7)</li>
+                            <li>각 7화음 소리 듣고 느낌 이야기하기. V7의 '긴장-해결' 소리에 주목.</li>
+                        </ul>
+                    </li>
+                </ul>
+                <button id="quizBtn" class="nav-button mt-4">✨ 퀴즈 내기</button>
+                <div id="quizOutput" class="llm-content-container hidden">
+                    <p id="quizQuestion"></p>
+                    <ul id="quizOptions"></ul>
+                    <button id="revealAnswerBtn" class="answer-reveal-button hidden">정답 보기</button>
+                    <p id="quizAnswer" class="mt-2 font-bold text-green-700 hidden"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: 2주차 학습 목표 -->
+        <div id="slide-8" class="slide">
+            <div class="slide-content">
+                <h2 class="text-3xl font-bold">2주차: 코드 진행의 길과 다이어토닉 코드</h2>
+                <h3 class="text-2xl font-semibold mt-4">학습 목표:</h3>
+                <ul class="list-disc ml-6 mt-2 text-lg">
+                    <li>화음이 연결되어 음악적 흐름을 만드는 <b>코드 진행</b>의 개념을 이해한다.</li>
+                    <li>메이저 스케일 안에서 만들어지는 <b>다이어토닉 코드</b>의 종류와 소리를 인지한다.</li>
+                    <li><b>I-IV-V 코드 진행</b>의 안정-긴장-해결 관계를 소리로 경험하고 음악적 흐름을 예측할 수 있는 기초를 마련한다.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 9: 2주차 1교시 - 화음의 연결, 코드 진행 -->
+        <div id="slide-9" class="slide">
+            <div class="slide-content">
+                <h2 class="text-3xl font-bold">2주차 1교시: 화음의 연결, 코드 진행</h2>
+                <h3 class="text-2xl font-semibold mt-4">1. 지난 시간 복습 및 코드 진행 소개</h3>
+                <ul class="list-disc ml-6 mt-4 text-lg">
+                    <li><b>7화음 소리 복습:</b> Maj7, V7, min7 (V7의 불안정한 소리 강조)</li>
+                    <li><b>코드 진행(Chord Progression): 화음들이 만드는 길</b>
+                        <ul class="list-circle ml-6 mt-2 text-base">
+                            <li>여러 화음이 순서대로 연결되어 음악의 흐름을 만듭니다.</li>
+                            <li>마치 길을 걸어갈 때 다음 목적지를 향해 발걸음을 옮기듯.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 10: 2주차 1교시 - 메이저 스케일의 친구들: 다이어토닉 코드 -->
+        <div id="slide-10" class="slide">
+            <div class="slide-content">
+                <h2 class="text-3xl font-bold">메이저 스케일의 친구들: 다이어토닉 코드</h2>
+                <h3 class="text-2xl font-semibold mt-4">2. <b>다이어토닉 코드(Diatonic Chords):</b> 한 스케일 안에서 태어난 화음들</h3>
+                <ul class="list-disc ml-6 mt-4 text-lg">
+                    <li>"메이저 스케일 안에 있는 음들로만 만든 화음들"</li>
+                    <li><b>C Major Key 다이어토닉 7화음 (소리 위주):</b>
+                        <ul class="list-circle ml-6 mt-2 text-base">
+                            <li><b>I (CMaj7):</b> 안정적, 밝은 '으뜸' (집)</li>
+                            <li><b>II (Dm7):</b> 차분하고 부드러움</li>
+                            <li><b>III (Em7):</b> 약간 어두움</li>
+                            <li><b>IV (FMaj7):</b> 밝고 조금 긴장감 있는 '버금딸림' (여행 떠나는 길)</li>
+                            <li><b>V (G7):</b> 강한 긴장감, '으뜸'으로 돌아가고 싶어 함 (집에 거의 다 온 길!)</li>
+                            <li><b>VI (Am7):</b> 슬프지만 안정적 (마이너 스케일의 으뜸)</li>
+                            <li>VII (Bm7b5): 불안정</li>
+                        </ul>
+                    </li>
+                    <li>C Major 스케일 다이어토닉 7화음 연주하며 소리 특징 이야기하기. V7의 '강한 해결감' 주목.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 11: 2주차 1교시 - 가장 중요한 코드 진행: I-IV-V-I -->
+        <div id="slide-11" class="slide">
+            <div class="slide-content">
+                <h2 class="text-3xl font-bold">가장 중요한 코드 진행: I-IV-V-I</h2>
+                <h3 class="text-2xl font-semibold mt-4">3. 음악의 기본 흐름</h3>
+                <ul class="list-disc ml-6 mt-4 text-lg">
+                    <li>수많은 음악에서 가장 기본이 되는 코드 진행.</li>
+                    <li><b>I (안정) → IV (약간 긴장/움직임) → V (강한 긴장) → I (해결/안정)</b></li>
+                    <li>Cmaj7 - Fmaj7 - G7 - Cmaj7 반복 연주하며 기능적인 느낌 상기.</li>
+                    <li>백킹 트랙 위에서 I-IV-V-I 진행에 맞춰 자유롭게 멜로디/리듬 만들기.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 12: 2주차 2교시 - 다이어토닉 코드의 활용 -->
+        <div id="slide-12" class="slide">
+            <div class="slide-content">
+                <h2 class="text-3xl font-bold">2주차 2교시: 다이어토닉 코드의 활용</h2>
+                <h3 class="text-2xl font-semibold mt-4">1. 익숙한 노래 속 I-IV-V 코드 진행 찾기</h3>
+                <ul class="list-disc ml-6 mt-4 text-lg">
+                    <li>많은 노래들이 I-IV-V-I 진행을 기본으로 합니다.</li>
+                    <li>쉬운 동요나 대중가요에서 I-IV-V 진행을 연주하며 소리로 느껴보기. ("집에 왔다!" 느낌?)</li>
+                </ul>
+                <h3 class="text-2xl font-semibold mt-8">2. 음악을 더 풍부하게: 다이어토닉 코드 적용</h3>
+                <ul class="list-disc ml-6 mt-4 text-lg">
+                    <li>간단한 멜로디에 다이어토닉 코드를 붙여주면 훨씬 풍성해집니다.</li>
+                    <li>멜로디만 연주 후, 코드와 함께 연주하는 모습 보여주기.</li>
+                    <li>다이어토닉 코드 진행 백킹 위에서 각자 멜로디/노래/리듬 만들기.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 13: 3주차 학습 목표 -->
+        <div id="slide-13" class="slide">
+            <div class="slide-content">
+                <h2 class="text-3xl font-bold">3주차: 음악의 흥미로운 우회로, 세컨더리 도미넌트</h2>
+                <h3 class="text-2xl font-semibold mt-4">학습 목표:</h3>
+                <ul class="list-disc ml-6 mt-2 text-lg">
+                    <li><b>세컨더리 도미넌트(Secondary Dominant)</b>의 개념을 '잠시 다른 곳으로 여행 가는 소리'로 이해한다.</li>
+                    <li>주요 <b>세컨더리 도미넌트 (특히 V7/II, V7/V, V7/VI)</b>의 소리를 경험하고, 음악에 <b>색다른 분위기</b>를 더하는 역할을 인지한다.</li>
+                    <li>배운 화성학 개념들이 음악 감상과 연주/창작에 어떻게 활용될 수 있는지 총체적으로 이해한다.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 14: 3주차 1교시 - 특별한 방문객, 세컨더리 도미넌트 -->
+        <div id="slide-14" class="slide">
+            <div class="slide-content">
+                <h2 class="text-3xl font-bold">3주차 1교시: 특별한 방문객, 세컨더리 도미넌트</h2>
+                <h3 class="text-2xl font-semibold mt-4">1. 지난 시간 복습 및 세컨더리 도미넌트 소개</h3>
+                <ul class="list-disc ml-6 mt-4 text-lg">
+                    <li><b>I-IV-V-I 진행 복습:</b> V7의 강한 해결감 상기.</li>
+                    <li><b>세컨더리 도미넌트:</b> 다른 길로 새는 여행
+                        <ul class="list-circle ml-6 mt-2 text-base">
+                            <li>"원래 코드 진행에서 잠시 벗어나, 다른 코드를 마치 '으뜸'인 것처럼 느끼게 만들어주는 코드예요."</li>
+                            <li>음악에 <b>새로운 긴장감과 색다른 분위기</b>를 더해줍니다.</li>
+                        </ul>
+                    </li>
+                </ul>
+                <button id="clarifyBtn" class="nav-button mt-4">✨ 더 쉽게 설명해줘</button>
+                <div id="clarifyOutput" class="llm-content-container hidden">
+                    <p id="clarifyText" class="loading-indicator">설명 생성 중...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 15: 3주차 1교시 - 주요 세컨더리 도미넌트의 소리 경험 (V7/II) -->
+        <div id="slide-15" class="slide">
+            <div class="slide-content">
+                <h2 class="text-3xl font-bold">주요 세컨더리 도미넌트의 소리 경험 (소리 집중!)</h2>
+                <h3 class="text-2xl font-semibold mt-4">2. <b>V7/II (투 파이브 세븐 오브 투):</b> D minor로 가고 싶어!</h3>
+                <ul class="list-disc ml-6 mt-4 text-lg">
+                    <li><b>C 키에서 Dm7으로 향하는 V7 코드 (A7) 예시:</b>
+                        <ul class="list-circle ml-6 mt-2 text-base">
+                            <li>C - Dm7 (일반 진행)</li>
+                            <li>C - <b>A7</b> - Dm7 (A7을 넣으니 Dm7으로 더 강하게 끌려가는 느낌!)</li>
+                        </ul>
+                    </li>
+                    <li>C Major key에서 <b>B7 → Em7</b> 진행 연주하며 'Em7으로 강하게 이끌리는' 소리 강조.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 16: 3주차 1교시 - 주요 세컨더리 도미넌트의 소리 경험 (V7/V, V7/VI) -->
+        <div id="slide-16" class="slide">
+            <div class="slide-content">
+                <h2 class="text-3xl font-bold">주요 세컨더리 도미넌트의 소리 경험 (계속)</h2>
+                <h3 class="text-2xl font-semibold mt-4"><b>V7/V (투 파이브 세븐 오브 파이브):</b> G Major로 가고 싶어!</h3>
+                <ul class="list-disc ml-6 mt-4 text-lg">
+                    <li><b>C 키에서 G7으로 향하는 V7 코드 (D7) 예시:</b>
+                        <ul class="list-circle ml-6 mt-2 text-base">
+                            <li>C - G7 (일반 진행)</li>
+                            <li>C - <b>D7</b> - G7 - C (D7을 넣으니 G7으로 더 힘있게 나아가는 느낌!)</li>
+                        </ul>
+                    </li>
+                    <li>C Major key에서 <b>D7 → G7</b> 진행 연주하며 'G7으로 강하게 이끌리는' 소리 강조.</li>
+                </ul>
+                <h3 class="text-2xl font-semibold mt-8"><b>V7/VI (투 파이브 세븐 오브 식스):</b> A minor로 가고 싶어!</h3>
+                <ul class="list-disc ml-6 mt-4 text-lg">
+                    <li><b>C 키에서 Am7으로 향하는 V7 코드 (E7) 예시:</b>
+                        <ul class="list-circle ml-6 mt-2 text-base">
+                            <li>C - Am7 (일반 진행)</li>
+                            <li>C - <b>E7</b> - Am7 (E7을 넣으니 Am7으로 더 극적으로 나아가는 느낌!)</li>
+                        </ul>
+                    </li>
+                    <li>C Major key에서 <b>E7 → Am7</b> 진행 연주하며 'Am7으로 강하게 이끌리는' 소리 강조.</li>
+                </ul>
+                <p class="text-lg mt-4">각 코드 진행에서 세컨더리 도미넌트가 나왔을 때의 '새롭고 흥미로운' 소리에 집중하고, 멜로디/리듬으로 표현해보기.</p>
+            </div>
+        </div>
+
+        <!-- Slide 17: 3주차 2교시 - 음악 속 세컨더리 도미넌트 찾기 -->
+        <div id="slide-17" class="slide">
+            <div class="slide-content">
+                <h2 class="text-3xl font-bold">3주차 2교시: 음악 속 세컨더리 도미넌트와 총정리</h2>
+                <h3 class="text-2xl font-semibold mt-4">1. 음악 속 세컨더리 도미넌트 찾기</h3>
+                <ul class="list-disc ml-6 mt-4 text-lg">
+                    <li>많은 팝/재즈 음악에서 사용되어 음악을 세련되고 다채롭게 만듭니다.</li>
+                    <li>익숙한 팝/재즈 곡에서 세컨더리 도미넌트가 사용된 부분 듣기.
+                        <ul class="list-circle ml-6 mt-2 text-base">
+                            <li>"여기서 뭔가 갑자기 다른 색깔의 코드가 나왔다가 다시 원래 흐름으로 돌아오는 것 같지 않나요?"</li>
+                            <li><b>보컬/드럼 전공:</b> 코드 변화가 멜로디/리듬에 어떤 '긴장'이나 '변화'를 주는지 이야기해보기.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 18: 3주차 2교시 - 배운 내용 총정리 및 활용 방안 -->
+        <div id="slide-18" class="slide">
+            <div class="slide-content">
+                <h2 class="text-3xl font-bold">배운 내용 총정리 및 활용 방안</h2>
+                <h3 class="text-2xl font-semibold mt-4"><b>2. 음악 감상에 활용하기:</b></h3>
+                <ul class="list-disc ml-6 mt-4 text-lg">
+                    <li>화음의 변화와 코드 진행의 흐름까지 들을 수 있는 '깊이 있는 귀' 갖기.</li>
+                    <li>음악이 밝아지는지, 슬퍼지는지, 긴장했다가 해결되는지, 여행을 떠나는지 소리로 느껴보세요!</li>
+                </ul>
+                <h3 class="text-2xl font-semibold mt-8"><b>3. 자신의 음악 활동에 적용하기:</b></h3>
+                <ul class="list-disc ml-6 mt-4 text-lg">
+                    <li><b>피아노/키보드:</b> 다양한 코드 사용, 세련된 반주, 즉흥 연주/편곡.</li>
+                    <li><b>보컬:</b> 멜로디 표현 풍부하게, 감정 전달 향상, 화음 정확도 향상.</li>
+                    <li><b>드럼:</b> 코드 진행 변화에 따른 리듬 변화, 필인 활용.</li>
+                    <li>모든 개념이 포함된 백킹 트랙 위에서 자유롭게 자신의 전공으로 표현해보기.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 19: 마무리 -->
+        <div id="slide-19" class="slide">
+            <div class="slide-content text-center">
+                <h2 class="text-4xl font-bold mb-6">특강을 마치며</h2>
+                <p class="text-xl mb-4">오늘까지의 특강에서 가장 기억에 남는 것이나, 새롭게 알게 된 점이 있다면 이야기해봅시다.</p>
+                <p class="text-xl mb-8">음악은 무한한 가능성을 가진 세상입니다. 오늘 배운 화성학 기초가 여러분의 음악적 여정에 작은 길잡이가 되었기를 바랍니다. 앞으로도 끊임없이 탐구하고 즐겁게 음악 하시길 응원합니다!</p>
+                <p class="text-2xl font-semibold text-blue-600 mt-12">감사합니다!</p>
+            </div>
+        </div>
+
+
+        <!-- Navigation Buttons (hidden, but structure kept for potential future use) -->
+        <div class="navigation-buttons">
+            <button id="prevBtn" class="nav-button">이전</button>
+            <button id="nextBtn" class="nav-button">다음</button>
+        </div>
+        <div class="slide-number" id="slideNumber"></div>
+    </div>
+
+    <script>
+        // Get all slides
+        const slides = document.querySelectorAll('.slide');
+        // Get navigation buttons (now hidden, but references kept if needed)
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        // Get slide number display
+        const slideNumberDisplay = document.getElementById('slideNumber');
+        // Get the main presentation container for touch events
+        const presentationContainer = document.getElementById('presentationContainer');
+
+        // Initialize current slide index
+        let currentSlideIndex = 0;
+
+        // Variables for swipe detection
+        let startX = 0;
+        let endX = 0;
+        const swipeThreshold = 50; // Minimum pixels to count as a swipe
+
+        // Gemini API Key (leave empty, Canvas will provide at runtime)
+        const API_KEY = ""; 
+
+        // Function to show a specific slide
+        function showSlide(index) {
+            // Ensure index is within bounds
+            if (index < 0 || index >= slides.length) {
+                return;
+            }
+
+            const oldSlideIndex = currentSlideIndex;
+            const newSlideIndex = index;
+
+            // Determine direction
+            const direction = newSlideIndex > oldSlideIndex ? 'next' : 'prev';
+
+            const oldSlide = slides[oldSlideIndex];
+            const newSlide = slides[newSlideIndex];
+
+            // 1. Handle the outgoing slide's animation and deactivate it.
+            if (oldSlide && oldSlideIndex !== newSlideIndex) {
+                oldSlide.classList.remove('active');
+                if (direction === 'next') {
+                    oldSlide.style.transform = 'translateX(-100%)'; // Old slide moves left (for next)
+                } else { // direction === 'prev'
+                    oldSlide.style.transform = 'translateX(100%)'; // Old slide moves right (for prev)
+                }
+                oldSlide.style.opacity = '0'; // Immediately hide old slide for cleaner transition
+            }
+
+            // 2. Prepare the new slide's initial position.
+            if (direction === 'next') {
+                newSlide.style.transform = 'translateX(100%)'; // New slide starts from right
+            } else { // direction === 'prev'
+                newSlide.style.transform = 'translateX(-100%)'; // New slide starts from left
+            }
+            newSlide.classList.remove('active'); // Ensure it's not active prematurely
+            newSlide.style.opacity = '0'; // Ensure it starts invisible
+
+            // 3. Update current slide index
+            currentSlideIndex = newSlideIndex;
+
+            // 4. Animate in the new slide after a brief moment to ensure initial transform is applied.
+            requestAnimationFrame(() => {
+                newSlide.classList.add('active'); // This will set opacity: 1 and transform: translateX(0)
+                newSlide.style.transform = 'translateX(0)'; // Explicitly set target for transition
+                newSlide.style.opacity = '1'; // Explicitly set target for transition
+
+                // Reset scroll position to top for the new slide's content
+                const newSlideContent = newSlide.querySelector('.slide-content');
+                if (newSlideContent) {
+                    newSlideContent.scrollTop = 0;
+                }
+            });
+
+            // 5. Ensure all other slides (not old, not new) are hidden and off-screen.
+            slides.forEach((slide, i) => {
+                if (i !== oldSlideIndex && i !== newSlideIndex) {
+                    slide.classList.remove('active');
+                    slide.style.transform = 'translateX(100%)'; // Keep them off-screen right by default
+                    slide.style.opacity = '0'; // Ensure they are hidden
+                }
+            });
+
+            // Update slide number display
+            slideNumberDisplay.textContent = `${currentSlideIndex + 1} / ${slides.length}`;
+
+            // Hide LLM outputs when changing slides
+            document.getElementById('quizOutput').classList.add('hidden');
+            document.getElementById('clarifyOutput').classList.add('hidden');
+            document.getElementById('quizAnswer').classList.add('hidden');
+            document.getElementById('revealAnswerBtn').classList.add('hidden');
+        }
+
+        // Function to go to the next slide
+        function nextSlide() {
+            if (currentSlideIndex < slides.length - 1) {
+                showSlide(currentSlideIndex + 1);
+            }
+        }
+
+        // Function to go to the previous slide
+        function prevSlide() {
+            if (currentSlideIndex > 0) {
+                showSlide(currentSlideIndex - 1);
+            }
+        }
+
+        // --- Touch/Swipe Event Listeners ---
+        presentationContainer.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+        }, { passive: true });
+
+        presentationContainer.addEventListener('touchmove', (e) => {
+            endX = e.touches[0].clientX;
+        }, { passive: true });
+
+        presentationContainer.addEventListener('touchend', () => {
+            const diffX = endX - startX;
+
+            if (diffX < -swipeThreshold) { // Swiped left (to go to next slide)
+                nextSlide();
+            } else if (diffX > swipeThreshold) { // Swiped right (to go to previous slide)
+                prevSlide();
+            }
+
+            // Reset touch positions
+            startX = 0;
+            endX = 0;
+        });
+
+        // --- Keyboard Event Listener ---
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.keyCode === 32) { // Right arrow or Spacebar
+                e.preventDefault(); // Prevent default scroll for spacebar
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') { // Left arrow
+                e.preventDefault(); // Prevent default browser back/forward
+                prevSlide();
+            }
+        });
+
+
+        // --- Gemini API Integration Functions ---
+
+        // Generic API call function with exponential backoff
+        async function callGeminiAPI(payload, retries = 0) {
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${API_KEY}`;
+            const maxRetries = 5;
+            const baseDelay = 1000; // 1 second
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    if (response.status === 429 && retries < maxRetries) { // Too Many Requests
+                        const delay = baseDelay * Math.pow(2, retries) + Math.random() * 1000;
+                        await new Promise(res => setTimeout(res, delay));
+                        return callGeminiAPI(payload, retries + 1);
+                    }
+                    throw new Error(`API request failed with status ${response.status}`);
+                }
+
+                const result = await response.json();
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    return result.candidates[0].content.parts[0].text;
+                } else {
+                    throw new Error("Unexpected API response structure or missing content.");
+                }
+            } catch (error) {
+                console.error("Gemini API call error:", error);
+                return null;
+            }
+        }
+
+        // Quiz Generation Function
+        const quizBtn = document.getElementById('quizBtn');
+        const quizOutput = document.getElementById('quizOutput');
+        const quizQuestionElem = document.getElementById('quizQuestion');
+        const quizOptionsElem = document.getElementById('quizOptions');
+        const revealAnswerBtn = document.getElementById('revealAnswerBtn');
+        const quizAnswerElem = document.getElementById('quizAnswer');
+
+        let currentQuizAnswer = '';
+
+        quizBtn.addEventListener('click', async () => {
+            quizOutput.classList.remove('hidden');
+            quizQuestionElem.textContent = '퀴즈 생성 중...';
+            quizOptionsElem.innerHTML = '';
+            revealAnswerBtn.classList.add('hidden');
+            quizAnswerElem.classList.add('hidden');
+
+            const prompt = "음악 화성학에서 3화음과 7화음에 대한 간단한 객관식 퀴즈 문제와 정답을 JSON 형식으로 생성해줘. 문제는 1개만 만들어줘. JSON 스키마는 {'question': '문제 내용', 'options': ['보기1', '보기2', '보기3', '보기4'], 'answer': '정답 보기 내용'} 이야.";
+            const payload = {
+                contents: [{ role: "user", parts: [{ text: prompt }] }],
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            "question": { "type": "STRING" },
+                            "options": { "type": "ARRAY", "items": { "type": "STRING" } },
+                            "answer": { "type": "STRING" }
+                        },
+                        "propertyOrdering": ["question", "options", "answer"]
+                    }
+                }
+            };
+
+            const jsonResponse = await callGeminiAPI(payload);
+
+            if (jsonResponse) {
+                try {
+                    const quizData = JSON.parse(jsonResponse);
+                    quizQuestionElem.textContent = quizData.question;
+                    quizOptionsElem.innerHTML = '';
+                    quizData.options.forEach((option, index) => {
+                        const li = document.createElement('li');
+                        li.textContent = `${index + 1}. ${option}`;
+                        quizOptionsElem.appendChild(li);
+                    });
+                    currentQuizAnswer = quizData.answer;
+                    revealAnswerBtn.classList.remove('hidden');
+                } catch (e) {
+                    quizQuestionElem.textContent = '퀴즈를 생성하는 데 오류가 발생했습니다. 다시 시도해 주세요.';
+                    console.error("Failed to parse quiz JSON:", e);
+                }
+            } else {
+                quizQuestionElem.textContent = '퀴즈 생성에 실패했습니다. 네트워크 연결을 확인하거나 잠시 후 다시 시도해 주세요.';
+            }
+        });
+
+        revealAnswerBtn.addEventListener('click', () => {
+            quizAnswerElem.textContent = `정답: ${currentQuizAnswer}`;
+            quizAnswerElem.classList.remove('hidden');
+            revealAnswerBtn.classList.add('hidden');
+        });
+
+        // Clarification Function
+        const clarifyBtn = document.getElementById('clarifyBtn');
+        const clarifyOutput = document.getElementById('clarifyOutput');
+        const clarifyTextElem = document.getElementById('clarifyText');
+
+        clarifyBtn.addEventListener('click', async () => {
+            clarifyOutput.classList.remove('hidden');
+            clarifyTextElem.textContent = '설명 생성 중...';
+
+            const prompt = "음악 화성학 개념인 '세컨더리 도미넌트'를 음악 비전공 학생들도 이해하기 쉽게, 일상적인 비유를 들어서 100단어 이내로 설명해줘.";
+            const payload = {
+                contents: [{ role: "user", parts: [{ text: prompt }] }]
+            };
+
+            const responseText = await callGeminiAPI(payload);
+
+            if (responseText) {
+                clarifyTextElem.textContent = responseText;
+            } else {
+                clarifyTextElem.textContent = '설명 생성에 실패했습니다. 네트워크 연결을 확인하거나 잠시 후 다시 시도해 주세요.';
+            }
+        });
+
+        // Initial slide display on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            showSlide(currentSlideIndex);
+        });
+    </script>
+</body>
+</html>
